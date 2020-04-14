@@ -530,7 +530,7 @@ function listen_challenge(challenge){
             activity_timer.set_end_callback(silly_cb_challenge);
             var accept_button='';
             //var updates = {};
-            if(session_data.user==get_session_master(challenge) && objectProperties(challenge.u).length>1){
+            if(session_data.user==get_session_master(challenge) && Object.keys(challenge.u).length>1){
                 accept_button='<button id="start_challenge">start</button>';
             }
             //firebase.database().ref().update(updates);
@@ -546,7 +546,7 @@ function listen_challenge(challenge){
             <br /><button id="go-back" class="minibutton fixed-bottom-right go-back">&lt;</button> \
             ';
             console.log('session-master:'+get_session_master(challenge));
-            if(session_data.user==get_session_master(challenge) && objectProperties(challenge.u).length>1){
+            if(session_data.user==get_session_master(challenge) && Object.keys(challenge.u).length>1){
                 document.getElementById("start_challenge").addEventListener(clickOrTouch,function(){
                     var updates = {};
                     updates['challenges/'+dbRefChallengeKey+'/game_status'] = 'playing';
@@ -677,7 +677,7 @@ function two_alive(challenge){
     for (var user in challenge.u){
         if(challenge.u[user].lifes>0) alive++;
     }
-    console.log('alive: '+alive+' of '+objectProperties(challenge.u).length);
+    console.log('alive: '+alive+' of '+Object.keys(challenge.u).length);
     if(alive>=2) return true;
     else return false;
 }
@@ -874,7 +874,7 @@ function check_correct_challenge(clicked_answer){
 function handle_zombies(challenge) {
     var challenge_zombies_beat=get_challenge_zombies_beat(challenge);
     console.log("zimbie beat monitoring");
-    if(zombies_beat==null || objectProperties(zombies_beat).length!=objectProperties(challenge_zombies_beat).length){ // initialize
+    if(zombies_beat==null || Object.keys(zombies_beat).length!=Object.keys(challenge_zombies_beat).length){ // initialize
         zombies_beat=challenge_zombies_beat;
         console.log("initialize");
     }else{ // compare local to global
