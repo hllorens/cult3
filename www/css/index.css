@@ -159,6 +159,9 @@ select, button {font-family:inherit;font-size:inherit;}
 	text-align: center;
 	font-size: 24px;
 }
+.marked{
+    background-color: #faa;
+}
 
 .coolbutton{
     font-variant: small-caps;

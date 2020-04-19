@@ -24,6 +24,7 @@ var session={
     challenge_name:"",
 	user: "",
 	timestamp: "0000-00-00 00:00",
+    cm:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     level: "normal",
     beat: 0,
     beat_timeout: null,
@@ -121,14 +122,14 @@ function challenge_form(type){
 function challenge_form_action(challenge,type){
     var updates = {};
     var c=random_carton();
-    var cm=new Array(27);
+    var cm=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     var u={
             role: 'invitee',
             score: 0,
             lifes: 3,
             answer: '',
             carton:c,
-            carton_marks:cm
+            cm:cm
         };
     if(type=='crear'){
         u.role='inviter';
@@ -335,43 +336,45 @@ function listen_challenge(challenge){
               <br />\
               <table id="carton">\
                 <tr>\
-                    <td id="square0">&nbsp;</td>\
-                    <td id="square3">&nbsp;</td>\
-                    <td id="square6">&nbsp;</td>\
-                    <td id="square9">&nbsp;</td>\
-                    <td id="square12">&nbsp;</td>\
-                    <td id="square15">&nbsp;</td>\
-                    <td id="square18">&nbsp;</td>\
-                    <td id="square21">&nbsp;</td>\
-                    <td id="square24">&nbsp;</td>\
+                    <td id="square0" class="filler">&nbsp;</td>\
+                    <td id="square3" class="filler">&nbsp;</td>\
+                    <td id="square6" class="filler">&nbsp;</td>\
+                    <td id="square9" class="filler">&nbsp;</td>\
+                    <td id="square12" class="filler">&nbsp;</td>\
+                    <td id="square15" class="filler">&nbsp;</td>\
+                    <td id="square18" class="filler">&nbsp;</td>\
+                    <td id="square21" class="filler">&nbsp;</td>\
+                    <td id="square24" class="filler">&nbsp;</td>\
                 </tr>\
                 <tr>\
-                    <td id="square1">&nbsp;</td>\
-                    <td id="square4">&nbsp;</td>\
-                    <td id="square7">&nbsp;</td>\
-                    <td id="square10">&nbsp;</td>\
-                    <td id="square13">&nbsp;</td>\
-                    <td id="square16">&nbsp;</td>\
-                    <td id="square19">&nbsp;</td>\
-                    <td id="square22">&nbsp;</td>\
-                    <td id="square25">&nbsp;</td>\
+                    <td id="square1" class="filler">&nbsp;</td>\
+                    <td id="square4" class="filler">&nbsp;</td>\
+                    <td id="square7" class="filler">&nbsp;</td>\
+                    <td id="square10" class="filler">&nbsp;</td>\
+                    <td id="square13" class="filler">&nbsp;</td>\
+                    <td id="square16" class="filler">&nbsp;</td>\
+                    <td id="square19" class="filler">&nbsp;</td>\
+                    <td id="square22" class="filler">&nbsp;</td>\
+                    <td id="square25" class="filler">&nbsp;</td>\
                 </tr>\
                 <tr>\
-                    <td id="square2">&nbsp;</td>\
-                    <td id="square5">&nbsp;</td>\
-                    <td id="square8">&nbsp;</td>\
-                    <td id="square11">&nbsp;</td>\
-                    <td id="square14">&nbsp;</td>\
-                    <td id="square17">&nbsp;</td>\
-                    <td id="square20">&nbsp;</td>\
-                    <td id="square23">&nbsp;</td>\
-                    <td id="square26">&nbsp;</td>\
+                    <td id="square2" class="filler">&nbsp;</td>\
+                    <td id="square5" class="filler">&nbsp;</td>\
+                    <td id="square8" class="filler">&nbsp;</td>\
+                    <td id="square11" class="filler">&nbsp;</td>\
+                    <td id="square14" class="filler">&nbsp;</td>\
+                    <td id="square17" class="filler">&nbsp;</td>\
+                    <td id="square20" class="filler">&nbsp;</td>\
+                    <td id="square23" class="filler">&nbsp;</td>\
+                    <td id="square26" class="filler">&nbsp;</td>\
                 </tr>\
             </table>\
-              linea    bingo <br />\
+             <!--<button id="linea" class="minibutton">Linea</button>-->    <button id="bingo" class="minibutton">BINGO</button> <br />\
             <br /><button id="go-back" class="minibutton fixed-bottom-right go-back">&lt;</button> \
             ';
             print_card(session.challenge.u[session.user].carton);
+            //document.getElementById("linea").addEventListener(clickOrTouch,function(){cancel_challenge_prompt(challenge);}.bind(challenge));
+            document.getElementById("bingo").addEventListener(clickOrTouch,function(){check_bingo();});
             document.getElementById("go-back").addEventListener(clickOrTouch,function(){cancel_challenge_prompt(challenge);}.bind(challenge));
         }else if(challenge.game_status=='waiting_check'){
         }
@@ -581,9 +584,22 @@ function triad(c){
 
 function print_card(card){
   for(var i=0 ; i<27 ; i++){
-      if(card[i]!=-1) document.getElementById("square" + i).innerHTML = card[i];
-      else document.getElementById("square" + i).innerHTML =&#9825;
+      if(card[i]!=-1){
+          document.getElementById("square" + i).innerHTML = card[i];
+          if(session.cm[i]==1 && !document.getElementById("square" + i).classList.contains('marked')) document.getElementById("square" + i).classList.add("marked");
+          document.getElementById("square" + i).addEventListener(clickOrTouch,function(){mark(this.id)});
+      }
+      else document.getElementById("square" + i).innerHTML = '&#9825';
   }
+}
+
+function mark(num){
+    num=num.substring(6,num.length);
+    if(session.cm[num]==1){console.log("desmarcar"+num+" val:"+session.cm.join(", "));session.cm[num]=0;}
+    else{session.cm[num]=1;document.getElementById("square" + num).classList.add("marked");}
+    //var updates = {};
+    //updates['challenges/'+session.challenge_name+'/u/'+session.user+'/mc'] = session.challenge.u[session.user].cm;
+    //firebase.database().ref().update(updates);
 }
 
 
@@ -600,9 +616,34 @@ function new_number(){
     activity_timer.start(); // this will fire next events
 }
 
+function is_bingo(user){
+    if(typeof(user)=='undefined') user=session.user;
+    for(var num of session.challenge.u[user].carton){
+        if(session.challenge.bolas.indexOf(num)==-1) return false;
+    }
+    return true;
+}
+
+function check_bingo(user){
+    if(!is_bingo(user)){alert("el bingo no es correcto"); return;}
+    else{
+        //move to game over
+        var updates = {};
+        updates['challenges/'+session.challenge_name+'/game_status'] = 'over';
+        firebase.database().ref().update(updates);
+    }
+}
 
 
-
+function get_winner_string(){
+    var winner=[];
+    for(var u in session.challenge.u){
+        if(is_bingo(u)){
+            winner.push(u);
+        }
+    }
+    return "Ganador ("+winner.length+"): "+winner.join(", ");
+}
 
 
 
